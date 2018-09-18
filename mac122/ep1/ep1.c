@@ -124,7 +124,7 @@ void printPolynomial(Polynomial poly)
 			}
 		}
 
-		printf("%f*x^%d", fabs(currentElement->coefficient), currentElement->exponent);
+		printf("%.2f*x^%d", fabs(currentElement->coefficient), currentElement->exponent);
 
 		firstElement = 0;
 	}
@@ -280,7 +280,7 @@ int main()
 	Polynomial deri1 = Derivada(poly);
 	Polynomial deri2 = SegundaDerivada(poly);
 
-	printf("%f\n", Valor(poly, x));
+	printf("%.2f\n", Valor(poly, x));
 	printPolynomial(deri1);
 	printPolynomial(deri2);
 
