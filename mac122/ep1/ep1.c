@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <math.h>
-
 /* 
 	Affonso Gino Amendola Neto
 	(https://github.com/affonsoamendola/)
@@ -97,6 +95,18 @@ polyElement* getElementAt(Polynomial poly, int index)
 	return currentElement;
 }
 
+float fabsolute(float x)
+{
+    if(x >= 0.0f)
+    {
+        return x;
+    }
+    else
+    {
+        return x*(-1.0f);
+    }
+}
+
 void printPolynomial(Polynomial poly)
 {
 	polyElement* currentElement;
@@ -112,7 +122,7 @@ void printPolynomial(Polynomial poly)
 		currentElement = nextElement;
 		nextElement = currentElement->nextElement;
 	
-		if(firstElement == 0)
+		if(firstElement == 0 || (currentElement->coefficient) < 0.0f)
 		{
 			if((currentElement->coefficient) >= 0.0f)
 			{
@@ -124,7 +134,7 @@ void printPolynomial(Polynomial poly)
 			}
 		}
 
-		printf("%.2f*x^%d", fabs(currentElement->coefficient), currentElement->exponent);
+		printf("%.2f*x^%d", fabsolute(currentElement->coefficient), currentElement->exponent);
 
 		firstElement = 0;
 	}
@@ -166,6 +176,24 @@ Polynomial CriaPolinomio(char expr[]){
 //A 
 //---------------------------------------------------------
 
+float power(float x, int y)
+{
+    float returnValue;
+    returnValue = x;
+    
+    if(y == 0)
+    {
+        return 1.0f;
+    }
+    
+    for (int i = 1; i<y; i++)
+    {
+        returnValue = returnValue*x;
+    }
+    
+    return returnValue;
+}
+
 float Valor(Polynomial poly, float x)
 {
 	polyElement* currentElement;
@@ -181,7 +209,7 @@ float Valor(Polynomial poly, float x)
 		currentElement = nextElement;
 		nextElement = currentElement->nextElement;
 
-		currentValue += (currentElement->coefficient)*(pow(x,(currentElement->exponent)));
+		currentValue += (currentElement->coefficient)*(power(x,(currentElement->exponent)));
 	}
 
 	return currentValue;
