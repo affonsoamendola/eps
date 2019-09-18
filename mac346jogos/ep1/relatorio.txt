@@ -1,0 +1,57 @@
+-------------------------------
+Relatório EP 1
+-------------------------------
+Affonso Amendola - NUSP 9301753
+
+Minha implementação só possue um módulo, que é o simulator.lua, nele existem 3 funções e uma tabela, descrições a seguir:
+
+
+FUNÇÕES:
+
+fight(scenario_input, attacker, defender):
+
+	Essa é a função que simula uma luta (um unico ataque, sem contra ataque ou double attack) entre duas unidades recebe como entrada o cenário, o nome da unidade atacante, e o nome da unidade defensora.
+
+	A função usa o scenario_input para obter os stats atuais das unidades envolvidas e suas armas.
+
+	Ela só diz respeito a um unico ataque de uma unidade a outra, o codigo que lida com contra ataques ou double strike esta em SIMULATOR.run()
+
+SIMULATOR.run(scenario_input):
+
+	Essa é a função que simula todos os combates esperados, ele recebe o scenario_input e de la tira quais lutas ocorreram e entre quem, e chama fight para o ataque inicial e o contra ataque de cada uma das lutas e se pertinente o double strike de alguma delas.
+
+random_value():
+	
+	Retorna um valor aleatorio como o esperado pela luta, usando dois numeros aleatorios e fazendo a media deles.
+
+TABELAS:
+
+triangle_bonus:
+	
+	É uma tabela bidimensional simples, com os valores de bonus para cada par de armas em ataque e defesa, é um jeito muito mais rapido do que criar uma função com varios if's
+
+
+-----------------------------------
+TAREFAS CUMPRIDAS:
+
+T01 : Entregue no formato esperado, relatorio.txt + simulator.lua num arquivo .zip
+T02 : Código executa sem erros
+T03 : Relatório entregue (Ver acima para determinar se é completo e/ou adequado)
+T04 : Combate básico implementado (Ataque duplo, chance de acerto e dano, scenario00 passa no fe-check)
+T05 : Acertos críticos implementados (scenario01 passa no fe-check)
+T06 : Triângulo de vantagem implementado
+T07 : Armas eficazes (scenario02 passa no fe-check)
+
+T09 : Luacheck passa com OK se max line length for ignorado (Logo no começo a tabela de triangle bonus apontava warning de line length em todas as linhas, mas por motivos de organização decidi deixar com o tamanho passando de 120 mesmo, ja que se quebrar a linha no meio poderia ficar bem mais confuso.) e se unused for ignorado também, existem duas variaveis que sao assignadas um valor de 0 e nunca usadas pois logo apos disso num if são populadas com seu valor correto.
+
+T12 : com exceção de run e fight eu diria que as variaveis estão bem nomeadas.
+
+-----------------------------------
+TAREFAS FALHAS:
+
+T10 : 1 módulo de 106 linhas e ~4000 caracteres, acho que esses 5 pontos eu não ganho.
+T11 : 3 funcões e só uma delas tem menos que 15 linhas...
+
+-----------------------------------
+TAREFAS NEM-TENTEI:
+T08 : Preguiça

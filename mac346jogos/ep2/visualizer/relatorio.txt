@@ -1,0 +1,50 @@
+MAC346 EP2
+
+Affonso Gino Amendola Neto, NUSP 9301753
+Rafael Santos Flauzino, NUSP 9318525
+-------------------------------------------------------
+
+Seguindo o padrão do primeiro EP que fizemos, tudo foi feito em um unico modulo main.lua, mas dessa vez a funcionalidade foi separada em diversas funções.
+
+Infelizmente, nós deixamos diversas funcionalidades por fazer, como a parte de sprites e camera, e decidimos por entregar o EP somente com a renderização de tiles. 
+
+Para testar se todos os tiles estavam renderizando normalmente, nos implementamos uma variavel camera_position que podemos alterar e mover a camera manualmente, implementar a movimentação de camera como esperada no arquivo, não fizemos.
+
+------------------
+love.load
+
+carrega o arquivo de mundo fazendo uma chamada para load_world, escolhe a cor de fundo (a partir do arquivo de mundo), e carrega a imagem do tileset.
+------------------
+load_world(filename)
+
+usa o require do LUA para carregar a tabela de mundo do arquivo filename, e dela separa as layers de tiles e layers de objetos (a parte de layers de objetos não foi feita devido a tempo)
+------------------
+love.draw
+
+itera por todos as coordenadas do mundo (ver funcao ws_to_ss para ver como isso foi definido) e todas as layers e chama a funcao draw_tile para desenhar o tile correto na posição correta. (e não desenhar nada se o tile_id for 0)
+------------------
+draw_tile(posição na tela, tile_id)
+
+Desenha o tile de id tile_id na posição indicada, bem autoexplicativo, usa a função get_tile_quad()
+------------------
+get_tile_quad(tile_id)
+
+retorna o Quad referente ao Tile de id tile_id, referente ao quadrado do texture atlas que representa o tile indicado.
+------------------
+ws_to_ss(x, y, z, w, h)
+
+converte coordenadas de world space para screen space, aplica a equação mostrada no gitlab, cada tile é uma unidade, tile 0,0 é adjacente ao tile 1,0 e assim por diante, z é uma coordenada diretamente em screen_space e vem de offsety do arquivo usado
+------------------
+
+TAREFAS REALIZADAS:
+A1
+A2
+A3
+A4
+
+R1
+
+Q1 com 55 Warnings já que eu utilizei variaveis globais.
+Q3
+Q4
+Q5 Se o usuario não providenciar um arquivo, o programa sai e avisa que é preciso um argumento com o nome do mapa para carregar.
