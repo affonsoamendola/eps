@@ -1,6 +1,8 @@
 class = require "class"
 vector2 = require "common/vec"
 
+collision = require "collision"
+
 input_scenario = require "scene/test"
 
 camera_position = vector2(0, 0)
@@ -34,44 +36,80 @@ end
 function love.update(dt)
 	for k, entity in pairs(entity_list) do
 		if(entity.movement ~= nil) then
-			local old_position = deepcopy(entity.position.point)
 			entity.position.point = entity.position.point + (entity.movement.motion * dt)
 		end
-	end	
+
+		if(entity.position.point:length() > 1000) then
+			entity.position.point.x = -entity.position.point.x
+			entity.position.point.y = -entity.position.point.y
+		end
+	end
+
 	if(player ~= nil) then	
 		handle_input(dt)
 	end
+
+	--charge and field force applications
+
+	for k, entityf in pairs(entity_list) do
+		for j, entityq in pairs(entity_list) do
+			if(k ~= j) then
+				separation = entityq.position.point - entityf.position.point
+
+				if(entityf.field ~= nil and entityq.field ~= nil) then
+					force = ((separation)/((separation:length())^2)) * (1000 * entityf.field.strength * entityq.field.strength)
+					
+					if(entityq.body ~= nil) then
+						acceleration = force / entityq.body.size
+					else
+						acceleration = force / 1
+					end
+
+					if(entityq.movement ~= nil) then
+						
+						entityq.movement.motion = entityq.movement.motion + acceleration * dt
+					end
+				end
+			end
+			::continue::
+		end
+	end 
+
+	--check collisions
+
+	for k, entity1 in pairs(entity_list) do
+		for j, entity2 in pairs(entity_list) do
+			if(j <= k) then goto continue end
+
+			check_collision(entity1, entity2)
+			::continue::
+		end
+	end 
 end
 
 function handle_input(dt)
+	move = vector2(0, 0)
 	if(love.keyboard.isDown("up")) then
-		player.movement.motion = player.movement.motion + vector2(0,  player.control.acceleration * dt)
+		move = vector2(0, 1)
 	end
 	if(love.keyboard.isDown("down")) then
-		player.movement.motion = player.movement.motion + vector2(0, -player.control.acceleration * dt)
+		move = vector2(0, -1)
 	end
 	if(love.keyboard.isDown("left")) then
-		player.movement.motion = player.movement.motion + vector2(-player.control.acceleration * dt, 0)
+		move = vector2(-1, 0)
 	end
 	if(love.keyboard.isDown("right")) then
-		player.movement.motion = player.movement.motion + vector2( player.control.acceleration * dt, 0)
+		move = vector2(1, 0)
 	end
+
+	new_velocity = player.movement.motion + move * player.control.acceleration * dt
+	if(new_velocity:length() >= player.control.max_speed) then
+		new_velocity = move * player.control.max_speed * dt
+	end
+
+	player.movement.motion = player.movement.motion + move * player.control.acceleration * dt
 
 	camera_position = player.position.point
-end
-
-function check_collision(entity1, entity2)
-	local entity1_size = 8
-	local entity2_size = 8
-
-	if(entity1.body ~= nil) then
-		entity1_size = entity1.body.size
-	end
-	if(entity2.body ~= nil) then
-		entity2_size = entity2.body.size
-	end
-
-	return distance(entity2.position.point, entity1.position.point) < entity1_size + entity2_size
 end
 
 function distance(x1, x2)
