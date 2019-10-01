@@ -2,25 +2,27 @@ function check_collision(entity1, entity2)
 	local entity1_size = 8
 	local entity2_size = 8
 
-	if(entity1.body ~= nil) then
-		entity1_size = entity1.body.size
-	end
-	if(entity2.body ~= nil) then
-		entity2_size = entity2.body.size
-	end
+	if(entity1.body ~= nil or entity2.body ~= nil) then
 
-	distance = (entity2.position.point - entity1.position.point):length()
+		if(entity1.body ~= nil) then	
+			entity1_size = entity1.body.size
+		end
+		if(entity2.body ~= nil) then
+			entity2_size = entity2.body.size
+		end
 
-	if(distance < entity2_size + entity1_size) then
+		distance = (entity2.position.point - entity1.position.point):length()
 
-		l = (entity2_size + entity1_size) - distance
+		if(distance < entity2_size + entity1_size) then
 
-		d = (entity2.position.point - entity1.position.point):normalized()
+			l = (entity2_size + entity1_size) - distance
 
-		entity2.position.point = entity2.position.point + (d * l)
-		
-		if(entity2.movement ~= nil) then
-			entity2.movement.motion = entity2.movement.motion - d*(d:dot(entity2.movement.motion))
+			d = (entity2.position.point - entity1.position.point):normalized()
+
+			if(entity2.movement ~= nil) then
+				entity2.position.point = entity2.position.point + (d * l)
+				entity2.movement.motion = entity2.movement.motion - d*(d:dot(entity2.movement.motion))
+			end
 		end
 	end
 end

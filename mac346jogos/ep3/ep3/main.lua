@@ -34,30 +34,16 @@ function love.load()
 end
 
 function love.update(dt)
-	for k, entity in pairs(entity_list) do
-		if(entity.movement ~= nil) then
-			entity.position.point = entity.position.point + (entity.movement.motion * dt)
-		end
-
-		if(entity.position.point:length() > 1000) then
-			entity.position.point.x = -entity.position.point.x
-			entity.position.point.y = -entity.position.point.y
-		end
-	end
-
-	if(player ~= nil) then	
-		handle_input(dt)
-	end
 
 	--charge and field force applications
-
+ 
 	for k, entityf in pairs(entity_list) do
 		for j, entityq in pairs(entity_list) do
 			if(k ~= j) then
 				separation = entityq.position.point - entityf.position.point
 
-				if(entityf.field ~= nil and entityq.field ~= nil) then
-					force = ((separation)/((separation:length())^2)) * (1000 * entityf.field.strength * entityq.field.strength)
+				if(entityf.field ~= nil and entityq.charge ~= nil and entityq.movement ~= nil) then
+					force = ((separation)/((separation:length())^2)) * (1000 * entityf.field.strength * entityq.charge.strength)
 					
 					if(entityq.body ~= nil) then
 						acceleration = force / entityq.body.size
@@ -66,23 +52,37 @@ function love.update(dt)
 					end
 
 					if(entityq.movement ~= nil) then
-						
-						entityq.movement.motion = entityq.movement.motion + acceleration * dt
+
+						apply_velocity(entityq, acceleration*dt)
 					end
 				end
 			end
-			::continue::
 		end
 	end 
+	
+	if(player ~= nil) then	
+		handle_input(dt)
+	end
 
+	for k, entity in pairs(entity_list) do
+		if(entity.movement ~= nil) then
+			new_position = entity.position.point + (entity.movement.motion * dt)
+
+			if(new_position:length() > bounds_radius) then
+				entity.position.point.x = -entity.position.point.x
+				entity.position.point.y = -entity.position.point.y
+				new_position = entity.position.point + (entity.movement.motion * dt)
+			end
+
+			entity.position.point = entity.position.point + (entity.movement.motion * dt)
+		end
+	end
+	
 	--check collisions
 
 	for k, entity1 in pairs(entity_list) do
 		for j, entity2 in pairs(entity_list) do
-			if(j <= k) then goto continue end
-
 			check_collision(entity1, entity2)
-			::continue::
 		end
 	end 
 end
@@ -107,9 +107,21 @@ function handle_input(dt)
 		new_velocity = move * player.control.max_speed * dt
 	end
 
-	player.movement.motion = player.movement.motion + move * player.control.acceleration * dt
+	apply_velocity(player, move * player.control.acceleration * dt)
 
 	camera_position = player.position.point
+end
+
+function apply_velocity(entity, speed)
+	if(entity.movement ~= nil and entity.control ~= nil) then
+		entity.movement.motion = entity.movement.motion + speed
+		if(entity.movement.motion:length() > entity.control.max_speed) then
+			entity.movement.motion = entity.movement.motion:normalized() * entity.control.max_speed
+		end
+ 		--entity.movement.motion = entity.movement.motion + speed
+	elseif(entity.movement ~= nil) then
+		entity.movement.motion = entity.movement.motion + speed
+	end
 end
 
 function distance(x1, x2)
@@ -129,8 +141,13 @@ function love.draw()
 	for k, entity in pairs(entity_list) do
 		local ss = to_screen_coordinates(entity.position.point)	
 		if(entity.body ~= nil) then 
-			love.graphics.setColor(0, 1, 0, 0.7)
+			love.graphics.setColor(entity.color[1], entity.color[2], entity.color[3], 0.7)
 			love.graphics.circle("fill", ss.x, ss.y, entity.body.size)	
+		end
+
+		if(entity.charge ~= nil) then
+			love.graphics.setColor(entity.charge.color[1], entity.charge.color[2], entity.charge.color[3], 0.9)
+			love.graphics.circle("fill", ss.x, ss.y, 4)	
 		end
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.circle("line", ss.x, ss.y, 8)
@@ -146,6 +163,9 @@ function create_entity(entity_type)
 	if(new_entity.movement ~= nil and new_entity.movement.motion == nil) then
 		new_entity.movement.motion = vector2(0, 0)
 	end
+	if(new_entity.body ~= nil) then
+		new_entity.color = {0, 1.0, 0}
+	end
 	if(new_entity.body ~= nil and new_entity.body.size == nil) then
 		new_entity.body.size = 8
 	end
@@ -156,11 +176,30 @@ function create_entity(entity_type)
 			new_entity.control.max_speed = 50.0 
 		end
 	end
+
 	if(new_entity.field ~= nil and new_entity.field.strength == nil) then
 		new_entity.field.strength = 1 
 	end
+	if(new_entity.field ~= nil and (new_entity.field.strength ~= nil or new_entity.field.strength == 0)) then
+		if(new_entity.field.strength < 0) then
+			new_entity.color = {1.0, 0, 0}
+		else
+			new_entity.color = {0, 0, 1.0}
+		end
+	end
+
+
 	if(new_entity.charge ~= nil and new_entity.charge.strength == nil) then
 		new_entity.charge.strength = 1 
+	end
+	if(new_entity.charge ~= nil) then
+		if(new_entity.charge.strength < 0) then
+			new_entity.charge.color = {1.0, 0, 0}
+		elseif(new_entity.charge.strength == 0) then
+			new_entity.charge.color = {0, 1.0, 0}
+		else
+			new_entity.charge.color = {0, 0, 1.0}
+		end
 	end
 	new_entity.position.point.x , new_entity.position.point.y = randomize_circular_position(bounds_radius)
 
