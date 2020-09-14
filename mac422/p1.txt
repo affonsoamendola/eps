@@ -1,0 +1,5 @@
+R1: Eu acredito que a melhor forma para uma impressora seria um compartilhamento de espaço, reservar um espaço na memória onde o documento a ser impresso possa ser armazenado e enviado usando os sistemas de E/S para a impressora, a impressora poderia então informar mais tarde o computador quando a tarefa de impressão estiver terminada e o espaço reservado pode ser liberado para outros usos.
+
+Compartilhamento de tempo não seria ideal, ja que ter um processo enviando o documento pedaço a pedaço a cada uma quantidade de tempo especifica pode ser problematico quando o dispositivo recebendo a mensagem é lento e pode ter problemas mecânicos.
+
+R2: Durante a aula foi comentado sobre o comando nice do linux, eu não sabia que era possível alterar o scheduling de algum processo.
