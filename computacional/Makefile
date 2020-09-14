@@ -2,8 +2,8 @@ source = $(wildcard *.c)
 bin = ep1_buffon
 
 CC = gcc
-LIBRARY = #-lSDL2 -lSDL2_image -lm
-CFLAGS = -g
+LIBRARY = -lm #-lSDL2 -lSDL2_image 
+CFLAGS = -O2
 INCLUDE = #../ff-stb/C/
 
 $(bin) : $(source) 
