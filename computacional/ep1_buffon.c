@@ -59,7 +59,7 @@ int crossing_boards(double x, double footprint)
 
 	double half_footprint = footprint/2.0;
 
-	if(x + half_footprint >= strip_size_x || x - half_footprint <= 0.0)
+	if(x + half_footprint >= strip_size_x || x - half_footprint < 0.0)
 	{
 		return 1;
 	}
@@ -71,6 +71,7 @@ int crossing_boards(double x, double footprint)
 
 void buffon_experiment(int number_of_needles)
 {
+	clock_t begin = clock();
 	int crossed = 0;
 
 	for(int i = 0; i < number_of_needles; i++)
@@ -95,14 +96,23 @@ void buffon_experiment(int number_of_needles)
 
 	double pi_approximation = (2.0 * needle_length * number_of_needles) / (strip_size_x * crossed);
 
-	double error = fabs(pi_approximation - M_PI);
+	double real_error = fabs(pi_approximation - M_PI);
+	double estimated_error = fabs(pi_approximation/sqrt(number_of_needles));
 
-	printf("Pi is approximately = %.50f\n", pi_approximation);
-	printf("Error = %.50f\n", error);
+	clock_t end = clock();
+
+	double time = (double)(end - begin) / CLOCKS_PER_SEC;
+
+	printf("N=%d\n", number_of_needles);
+	printf("PI=%f\n", pi_approximation);
+	printf("Real_Error=%f\n", real_error);
+	printf("estimated_error=%f\n", estimated_error);
+	printf("Time=%f secs\n", time);
 }
 
 int main(int argc, char const *argv[])
 {
+	
 	//So Alex,
 	//
 	//This is bad, time() returns the amount of seconds since jan 1, 1970, meaning
@@ -118,7 +128,6 @@ int main(int argc, char const *argv[])
 	//
 	//Should'nt really affect anything, since this iteration of the program runs
 	//on a single thread, and there's really no reason to run it multiple times.
-
 	srand((unsigned int)time(NULL));
 
 	if(argc != 2)
@@ -126,11 +135,16 @@ int main(int argc, char const *argv[])
 		printf("Usage: ep1_buffon number_of_needles\n");
 		return -1;
 	}
-
 	//Executing the experiment with the 1st argument of the program as the number of 
 	//needles.
 	buffon_experiment(atoi(argv[1]));
 
+ 	/*
+	for(int n = 500000; n < 10000000; n += 5000)
+	{                     
+		buffon_experiment(n);
+	}
+	*/
 	return 0;
 }
 

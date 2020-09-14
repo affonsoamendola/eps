@@ -1,0 +1,5 @@
+A linha azul é a linha do erro estimado, enquanto os pontos em preto são obtidos de diferentes simulações com valores de N distintos.
+
+O erro estimado parece estar um pouco acima do erro real, mas as suas tendencias parecem estar similares, o que talvez possa indicar algum tipo de viés no codigo.
+
+Usando a equação de erro estimado, é possível estimar que é nescessario que N seja aproximadamente PI/1e-14, que é igual a 3.1415e14, a partir de testes usando a função clock da biblioteca padrão do C, é possível determinar que o tempo de execução é de aproximadamente 19328508.2934 iterações por segundo usando nivel de otimização O2, o que nos dá um tempo de execução total para encontrar PI com 14 casas decimais de 16253194.2575 segundos, ou 188 dias.
